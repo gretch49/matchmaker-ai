@@ -1,6 +1,3 @@
-# # streamlit run matchmaker.py
-pip install -r requirements.txt
-
 import streamlit as st
 import os
 from langchain_openai import ChatOpenAI
