@@ -1,5 +1,6 @@
 # # streamlit run matchmaker.py
 import streamlit as st
+from st_copy_to_clipboard import st_copy_to_clipboard
 import os
 from langchain_openai import ChatOpenAI
 
@@ -8,13 +9,13 @@ from langchain_openai import ChatOpenAI
 def get_keywords(description):
     from langchain_openai import ChatOpenAI
 
-    model = ChatOpenAI()
+    llm = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0, api_key=chatgpt_key)
     prompt = f"""
     Return a list of key words: '{description}' 
     Separate the keywords with semi-colons. Keep each keyword short, 1-3 words max. Use a single line.
     """
 
-    response = model.invoke(prompt)
+    response = llm.invoke(prompt)
     response_stripped = response.content.strip(' "')
 
     return response_stripped
@@ -22,17 +23,17 @@ def get_keywords(description):
 
 @st.cache_data(show_spinner=False)
 def get_resume_section(initial_prompt):
-    model = ChatOpenAI()
+    llm = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0, api_key=chatgpt_key)
     prompt = f"""
     {initial_prompt} Do not make up numbers. When you use a keyword from the list, wrap it like so: [[[keyword]]]
     """
-    response = model.invoke(prompt)
+    response = llm.invoke(prompt)
     response_stripped = response.content.strip(' "')
 
     print(response_stripped)
 
-    blueify = response_stripped.replace("[[[", ":blue[")
-    blueify = blueify.replace("]]]", "]")
+    blueify = response_stripped.replace("[[[", ":blue[**")
+    blueify = blueify.replace("]]]", "**]")
 
     return blueify
 
@@ -47,37 +48,38 @@ if __name__ == "__main__":
     from dotenv import load_dotenv, find_dotenv
     load_dotenv(find_dotenv(), override=True)
     gretchen_key = os.environ.get('GRETCHEN_KEY')
-    openai_api_key=""        
-    keywords=""
-    # relevant_keywords=""
+    chatgpt_key = ""
+    keywords = None
 
     if 'clicked' not in st.session_state:
         st.session_state.clicked = {"key_button_get_keywords":False,"key_button_save_rele_keywords":False,"key_button_go":False}
     
     st.header("MatchMaker AI")
     st.write("Match your resume to the job application with ChatGPT")
-    st.divider()
+    st.subheader(" ", divider='rainbow')
+    st_copy_to_clipboard("Copy this to clipboard")
+
 
     with st.sidebar:
         sidebar_key = st.sidebar.text_input("OpenAI API Key")
         if sidebar_key == gretchen_key:
             st.success("You used Gretchen's key. :tada:")
-            openai_api_key = os.environ.get('OPENAI_API_KEY')
+            chatgpt_key = os.environ.get('OPENAI_API_KEY')
         elif sidebar_key and not sidebar_key.startswith('sk-'):
             st.error("Double-check your OpenAI API key! If you try to use this, you'll get an error.", icon='⚠')
         elif sidebar_key:
             st.success('Key saved for the duration of this session.')
             st.info('Close the sidebar to hide your key.')
-            openai_api_key = sidebar_key
+            chatgpt_key = sidebar_key
 
-    if not openai_api_key:
+    if not chatgpt_key:
         st.info("Enter your OpenAI API key on the left to continue.")
 
     else:
         st.write(" ")
         st.subheader("The Job")
         st.write(" ")
-        st.write(":red[Copy and paste the job description here.]")
+        st.write(":red[Copy and paste the job description:]")
         job_description = st.text_area("Copy and paste the job description here.",label_visibility="collapsed", placeholder="The job description", key="key_job_description", height=300)
         
         ################################################################################
@@ -93,19 +95,19 @@ if __name__ == "__main__":
                 
                 st.write(" ")
                 st.subheader("Keywords")
-                st.write(f"**The keywords for this job description are:**  \n{keywords}  \n")
-                st.write(" ")
+                # st.write(f"**The keywords for this job description are:**  \n{keywords}  \n")
+                # st.write(" ")
 
         if keywords:
             st.write(" ")
-            st.markdown(":red[Check the keywords that are relevant to your experience.]")
+            st.markdown(":red[Check the keywords that are relevant to your experience:]")
 
             keywords_list = keywords.split('; ')
             keywords_list = [x.strip() for x in keywords_list]
 
             checked_keywords_list = []
             for x in keywords_list:
-                checkbox_value = st.checkbox(x,key=f"key_{x}")
+                checkbox_value = st.checkbox(x.capitalize(),key=f"key_{x}")
                 if checkbox_value:
                     checked_keywords_list.append(x)
         
@@ -113,13 +115,12 @@ if __name__ == "__main__":
             checked_keywords_string = "; ".join(checked_keywords_list)
 
             st.write(" ")
-            st.markdown(":red[Edit the keywords here.]")
+            st.markdown(":red[Edit the keywords:]")
             edit_keywords_string = st.text_area("Edit", value=checked_keywords_string,key="key_relevant_keywords",label_visibility="collapsed")
             
-            edit_keywords = edit_keywords_string.split('; ')
-            edit_keywords_list = [x.strip() for x in keywords_list]
+            edit_keywords_list = edit_keywords_string.split('; ')
+            edit_keywords_list = [x.strip() for x in edit_keywords_list]
             wrapped_list = ["[[[" + x.strip() + "]]]" for x in edit_keywords_list]
-            wrapped_list
 
             ########################################################################
             st.write(" ")
@@ -137,10 +138,10 @@ if __name__ == "__main__":
                 st.subheader("Your Work History")
                 column1, column2, column3 = st.columns([2,1,1])
                 
-                column1.write("Your position title: ")
+                column1.write(":red[Your position title: ]")
                 your_job_title = column1.text_input("Your position title: ", key = "key_your_title",label_visibility="collapsed").upper()
                 
-                column2.write("Years: ")
+                column2.write(":red[Years: ]")
                 years_job = column2.number_input("Years:", value="min", min_value=1,max_value=40, key="key_years_job", label_visibility="collapsed", step=1)
 
                 column3.write("(Optional)  Notes: ")
@@ -178,4 +179,4 @@ if __name__ == "__main__":
                             with st.container(border=True):
                                 st.markdown(resume_result)
                             st.markdown("*NB: The highlight is for your benefit. It is recommended you* ***do not*** *highlight the keywords in your resume PDF.*")
-                        
+                                
