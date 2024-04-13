@@ -24,7 +24,7 @@ def get_keywords(description):
 def get_resume_section(initial_prompt):
     llm = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0, api_key=chatgpt_key)
     prompt = f"""
-    {initial_prompt} Do not make up numbers. When you use a keyword from the list, wrap it like so: [[[keyword]]]
+    {initial_prompt} Do not make up numbers. Do not use a header. When you use a keyword from the list, wrap it like so: [[[keyword]]]
     """
     response = llm.invoke(prompt)
     response_stripped = response.content.strip(' "')
@@ -97,7 +97,7 @@ if __name__ == "__main__":
 
         if keywords:
             st.write(" ")
-            st.markdown(":red[Check the keywords that are relevant to your experience:]")
+            st.markdown(":red[Check the keywords that are relevant to your experience. You'll be able to edit them later.]")
 
             keywords_list = keywords.split('; ')
             keywords_list = [x.strip() for x in keywords_list]
@@ -125,46 +125,60 @@ if __name__ == "__main__":
             ########################################################################
             
             if checked_keywords_string and st.session_state.clicked["key_button_save_rele_keywords"]:
-                st.write(" ")
-                st.write(" ")
-                st.markdown(f"**Your relevant keywords are:**  \n:blue[{edit_keywords_string}]  \n")
+                # st.write(" ")
+                # st.write(" ")
+                # st.markdown(f"**Your relevant keywords are:**  \n:blue[{edit_keywords_string}]  \n")
 
-                st.write(" ")
+                # st.write(" ")
                 st.divider()
                 st.write(" ")
                 st.subheader("Your Work History")
-                column1, column2, column3 = st.columns([2,1,1])
+                column1, column2 = st.columns([1.5,1])
                 
                 column1.write(":red[Your position title: ]")
                 your_job_title = column1.text_input("Your position title: ", key = "key_your_title",label_visibility="collapsed").upper()
                 
+                column1.write(" ")
+
                 column2.write(":red[Years: ]")
                 years_job = column2.number_input("Years:", value="min", min_value=1,max_value=40, key="key_years_job", label_visibility="collapsed", step=1)
 
-                column3.write("(Optional)  Notes: ")
-                notes = column3.text_area("Notes",key="key_job_notes", label_visibility="collapsed",height=100, placeholder="Add in clients, specific projects, or anything else.")
+                column2.write(" ")
+                
+                column2.write("(Optional) Company: ")
+                company = column2.text_input("Company: ", key = "key_company",label_visibility="collapsed")
+
+                
+
+                column1.write("(Optional)  Notes: ")
+                notes = column1.text_area("Notes",key="key_job_notes", label_visibility="collapsed",height=120, placeholder="Add in clients, specific projects, or anything else.")
 
                 if your_job_title:
                     st.write(" ")
-                    display_prompt = f"Write a resume section with 5 bullet points for {your_job_title} with {years_job} year(s) of experience with the following keywords:  \n  :blue[{edit_keywords_string}]"
+                    if company:
+                        display_prompt = f"Write a resume section with 5 bullet points for a {your_job_title} with {years_job} year(s) of experience at '{company}' with the following keywords:  \n  :blue[{edit_keywords_string}]"
+                    else:
+                        func_prompt = f"Write a resume section with 5 bullet points for a {your_job_title} with {years_job} year(s) of experience with the following keywords:   \n  :blue[{edit_keywords_string}]"
 
                     if notes:
-                        display_prompt += f"  \n  \nAdditional notes include: {notes}"
+                        display_prompt += f"  \n  \nAdditional notes: {notes}"
                     
                     with st.container(border=True):
                         st.markdown(f'**ChatGPT will receive this prompt:**  \n  \n{display_prompt}\n')
                     st.write(" ")
 
-                    func_prompt = f"Write a resume section with 5 bullet points for a {your_job_title} with {years_job} year(s) of experience with the following keywords: {wrapped_list}"
-
+                    if company:
+                        func_prompt = f"Write a resume section with 5 bullet points for a {your_job_title} with {years_job} year(s) of experience at '{company}' with the following keywords: {wrapped_list}"
+                    else:
+                        func_prompt = f"Write a resume section with 5 bullet points for a {your_job_title} with {years_job} year(s) of experience with the following keywords: {wrapped_list}"
                     if notes:
                         func_prompt += f" Additional notes about this job: {notes}"
                     
                     ########################################################################
-                    st.button('Generate resume section', on_click=clicked, args=["key_button_go"], type="primary")
+                    button_go = st.button('Generate resume section', on_click=clicked, args=["key_button_go"], type="primary")
                     ########################################################################
                     
-                    if st.session_state.clicked["key_button_go"]:
+                    if button_go:
                         with st.spinner('Creating resume section . . .'):    
                             resume_result = get_resume_section(func_prompt)
                             
@@ -174,5 +188,9 @@ if __name__ == "__main__":
 
                             st.subheader("Your Result")
                             with st.container(border=True):
+                                st.write("BIO")
+                                st.write("lorem ipsum")
+                                st.divider()
+                                st.write("EXPERIENCE")
                                 st.markdown(resume_result)
                             st.markdown("*NB: The highlight is for your benefit. It is recommended you* ***do not*** *highlight the keywords in your resume PDF.*")
