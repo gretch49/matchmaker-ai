@@ -1,6 +1,5 @@
 # # streamlit run matchmaker.py
 import streamlit as st
-from st_copy_to_clipboard import st_copy_to_clipboard
 import os
 from langchain_openai import ChatOpenAI
 
@@ -57,8 +56,6 @@ if __name__ == "__main__":
     st.header("MatchMaker AI")
     st.write("Match your resume to the job application with ChatGPT")
     st.subheader(" ", divider='rainbow')
-    st_copy_to_clipboard("Copy this to clipboard")
-
 
     with st.sidebar:
         sidebar_key = st.sidebar.text_input("OpenAI API Key")
@@ -179,4 +176,3 @@ if __name__ == "__main__":
                             with st.container(border=True):
                                 st.markdown(resume_result)
                             st.markdown("*NB: The highlight is for your benefit. It is recommended you* ***do not*** *highlight the keywords in your resume PDF.*")
-                                
