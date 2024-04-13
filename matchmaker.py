@@ -98,34 +98,29 @@ if __name__ == "__main__":
 
         if keywords:
             st.write(" ")
-            ################################################################################
-            ################################################################################
-            ################################################################################
-
-
-
-
-
             st.markdown(":red[Check the keywords that are relevant to your experience.]")
-            
-
 
             keywords_list = keywords.split('; ')
             keywords_list = [x.strip() for x in keywords_list]
-            
-
-
 
             checked_keywords_list = []
             for x in keywords_list:
                 checkbox_value = st.checkbox(x,key=f"key_{x}")
                 if checkbox_value:
                     checked_keywords_list.append(x)
-            
-            wrapped_list = ["[[[" + x.strip() + "]]]" for x in checked_keywords_list]
+        
 
             checked_keywords_string = "; ".join(checked_keywords_list)
+
+            st.write(" ")
+            st.markdown(":red[Edit the keywords here.]")
+            edit_keywords_string = st.text_area("Edit", value=checked_keywords_string,key="key_relevant_keywords",label_visibility="collapsed")
             
+            edit_keywords = edit_keywords_string.split('; ')
+            edit_keywords_list = [x.strip() for x in keywords_list]
+            wrapped_list = ["[[[" + x.strip() + "]]]" for x in edit_keywords_list]
+            wrapped_list
+
             ########################################################################
             st.write(" ")
             st.button('Save keywords', on_click=clicked, args=["key_button_save_rele_keywords"], type="primary")
@@ -134,7 +129,7 @@ if __name__ == "__main__":
             if checked_keywords_string and st.session_state.clicked["key_button_save_rele_keywords"]:
                 st.write(" ")
                 st.write(" ")
-                st.markdown(f"**Your relevant keywords are:**  \n:blue[{checked_keywords_string}]  \n")
+                st.markdown(f"**Your relevant keywords are:**  \n:blue[{edit_keywords_string}]  \n")
 
                 st.write(" ")
                 st.divider()
@@ -153,7 +148,7 @@ if __name__ == "__main__":
 
                 if your_job_title:
                     st.write(" ")
-                    display_prompt = f"Write a resume section with 5 bullet points for {your_job_title} with {years_job} year(s) of experience with the following keywords:  \n  :blue[{checked_keywords_string}]"
+                    display_prompt = f"Write a resume section with 5 bullet points for {your_job_title} with {years_job} year(s) of experience with the following keywords:  \n  :blue[{edit_keywords_string}]"
 
                     if notes:
                         display_prompt += f"  \n  \nAdditional notes include: {notes}"
@@ -183,3 +178,4 @@ if __name__ == "__main__":
                             with st.container(border=True):
                                 st.markdown(resume_result)
                             st.markdown("*NB: The highlight is for your benefit. It is recommended you* ***do not*** *highlight the keywords in your resume PDF.*")
+                        
