@@ -192,7 +192,7 @@ if __name__ == "__main__":
 
                             with st.container(border=True):
                                 st.write("BIO")
-                                st.write("lorem ipsum")
+                                st.write("*lorem ipsum for now*")
                                 st.divider()
                                 st.write("EXPERIENCE")
                                 st.markdown(resume_result)
