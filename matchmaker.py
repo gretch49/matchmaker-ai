@@ -185,8 +185,6 @@ if __name__ == "__main__":
                             resume_result = get_resume_section(func_prompt)
                             
                             st.write(" ")
-                            st.divider()
-                            st.write(" ")
 
                             st.subheader("Your Result")
                             with st.container(border=True):
