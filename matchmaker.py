@@ -160,7 +160,7 @@ if __name__ == "__main__":
                     if company:
                         display_prompt = f"Write a resume section with 5 bullet points for a {your_job_title} with {years_job} year(s) of experience at '{company}' with the following keywords:  \n  :blue[{edit_keywords_string}]"
                     else:
-                        func_prompt = f"Write a resume section with 5 bullet points for a {your_job_title} with {years_job} year(s) of experience with the following keywords:   \n  :blue[{edit_keywords_string}]"
+                        display_prompt = f"Write a resume section with 5 bullet points for a {your_job_title} with {years_job} year(s) of experience with the following keywords:   \n  :blue[{edit_keywords_string}]"
 
                     if notes:
                         display_prompt += f"  \n  \nAdditional notes: {notes}"
