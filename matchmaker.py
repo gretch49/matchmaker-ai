@@ -59,7 +59,7 @@ if __name__ == "__main__":
 
     with st.sidebar:
         sidebar_key = st.sidebar.text_input("OpenAI API Key")
-        st.sidebar.button("Done")
+        st.sidebar.button("Enter key")
         st.sidebar.write(" ")
 
         if sidebar_key == gretchen_key:
