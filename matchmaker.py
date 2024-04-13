@@ -1,5 +1,6 @@
 # # streamlit run matchmaker.py
 import streamlit as st
+import time
 import os
 from langchain_openai import ChatOpenAI
 
@@ -28,8 +29,6 @@ def get_resume_section(initial_prompt):
     """
     response = llm.invoke(prompt)
     response_stripped = response.content.strip(' "')
-
-    print(response_stripped)
 
     blueify = response_stripped.replace("[[[", ":blue[**")
     blueify = blueify.replace("]]]", "**]")
@@ -63,7 +62,11 @@ if __name__ == "__main__":
         st.sidebar.write(" ")
 
         if sidebar_key == gretchen_key:
-            st.success("You used Gretchen's key. :tada:")
+            # container = st.sidebar.empty()
+            # container.success("You used Gretchen's key. :tada:") 
+            # time.sleep(1.5)
+            # container.empty()  
+            st.success("You're using Gretchen's key. :tada:")
             chatgpt_key = os.environ.get('OPENAI_API_KEY')
         elif sidebar_key and not sidebar_key.startswith('sk-'):
             st.error("Double-check your OpenAI API key! If you try to use this, you'll get an error.", icon='⚠')
@@ -77,14 +80,16 @@ if __name__ == "__main__":
 
     else:
         st.write(" ")
+        st.write(" ")
+        st.write(" ")
+
         st.subheader("The Job")
         st.write(" ")
+        
         st.write(":red[Copy and paste the job description:]")
         job_description = st.text_area("Copy and paste the job description here.",label_visibility="collapsed", placeholder="The job description", key="key_job_description", height=300)
-        
-        ################################################################################
+
         st.button('Get keywords', on_click=clicked, args=["key_button_get_keywords"],type="primary")
-        ################################################################################
 
         if st.session_state.clicked["key_button_get_keywords"] and not job_description:
             st.warning("Enter the job description.", icon='⚠')
@@ -94,12 +99,10 @@ if __name__ == "__main__":
                 keywords = get_keywords(job_description)
                 
                 st.write(" ")
+                st.write(" ")
                 st.subheader("Keywords")
-                # st.write(f"**The keywords for this job description are:**  \n{keywords}  \n")
-                # st.write(" ")
 
         if keywords:
-            st.write(" ")
             st.markdown(":red[Check the keywords that are relevant to your experience. You'll be able to edit them later.]")
 
             keywords_list = keywords.split('; ')
@@ -122,18 +125,18 @@ if __name__ == "__main__":
             edit_keywords_list = [x.strip() for x in edit_keywords_list]
             wrapped_list = ["[[[" + x.strip() + "]]]" for x in edit_keywords_list]
 
-            ########################################################################
-            st.write(" ")
-            st.button('Save keywords', on_click=clicked, args=["key_button_save_rele_keywords"], type="primary")
-            ########################################################################
-            
-            if checked_keywords_string and st.session_state.clicked["key_button_save_rele_keywords"]:
-                # st.write(" ")
-                # st.write(" ")
-                # st.markdown(f"**Your relevant keywords are:**  \n:blue[{edit_keywords_string}]  \n")
+            save_keywords_button = st.button('Save keywords', on_click=clicked, args=["key_button_save_rele_keywords"], type="primary")
 
-                # st.write(" ")
-                st.divider()
+            if checked_keywords_string and save_keywords_button:
+                st.write(" ")
+                container = st.empty()
+                container.success("Keywords saved.") 
+                time.sleep(1.5)
+                container.empty()  
+
+            if checked_keywords_string and st.session_state.clicked["key_button_save_rele_keywords"]:
+                st.write(" ")
+                st.write(" ")
                 st.write(" ")
                 st.subheader("Your Work History")
                 column1, column2 = st.columns([1.5,1])
@@ -176,17 +179,17 @@ if __name__ == "__main__":
                     if notes:
                         func_prompt += f" Additional notes about this job: {notes}"
                     
-                    ########################################################################
                     button_go = st.button('Generate resume section', on_click=clicked, args=["key_button_go"], type="primary")
-                    ########################################################################
                     
                     if button_go:
                         with st.spinner('Creating resume section . . .'):    
                             resume_result = get_resume_section(func_prompt)
                             
                             st.write(" ")
-
+                            st.write(" ")
+                            st.write(" ")
                             st.subheader("Your Result")
+
                             with st.container(border=True):
                                 st.write("BIO")
                                 st.write("lorem ipsum")
