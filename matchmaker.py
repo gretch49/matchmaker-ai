@@ -136,7 +136,7 @@ if __name__ == "__main__":
     
     st.header("MatchMaker AI")
     st.write("Match your resume to the job application with ChatGPT")
-    st.subheader(" ", divider='rainbow')
+    st.subheader(" ", divider='blue')
 
     with st.sidebar:
         sidebar_key = st.sidebar.text_input("OpenAI API Key").strip()
