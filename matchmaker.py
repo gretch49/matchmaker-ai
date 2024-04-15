@@ -70,20 +70,20 @@ def get_resume_bio(your_job_title,years_job, list_keywords, list_keywords_split,
     if company and include_checkbox:
         company_description = ddg_search(company)
         short_company_bio = get_short_bio(company,company_description)
-        func_prompt = f"Write a resume bio about 25 words for a {your_job_title} with {years_job} year(s) of experience at {company}, {short_company_bio} with the following keywords:  \n {list_keywords} \n Don't use all the keywords. Keep the length to about 25 words."
+        func_prompt = f"Write a 3-sentence, unique resume bio for a {your_job_title} with {years_job} year(s) of experience at {company}, {short_company_bio} with the following keywords:  \n {list_keywords} \n Don't use all the keywords. Keep the length to about 25 words."
     else:
-        func_prompt = f"Write a resume bio about 25 words for a {your_job_title} with {years_job} year(s) of experience with the following keywords:  \n {list_keywords} \n Don't use all the keywords. Keep the length to about 25 words."
+        func_prompt = f"Write a unique resume bio about 25 words for a {your_job_title} with {years_job} year(s) of experience with the following keywords:  \n {list_keywords} \n Don't use all the keywords. Keep the length to about 25 words."
 
     if notes:
-        func_prompt += f" Additional notes about this job: {notes}"
+        func_prompt += f"\nAdditional notes about this job: {notes}"
 
     if unique:
-        func_prompt += unique
+        func_prompt += f"\nI'm unique as a {your_job_title} because: {unique}"
 
     prompt = f"""
     {func_prompt}
     """
-
+    
     response = llm.invoke(prompt)
     response_stripped = response.content.strip(' "')
 
@@ -163,6 +163,7 @@ if __name__ == "__main__":
     chatgpt_key = ""
     keywords = None
     include_checkbox = False
+    asterick = "\\*"
 
     if 'clicked' not in st.session_state:
         st.session_state.clicked = {"key_button_get_keywords":False,"key_button_save_rele_keywords":False,"key_button_go":False,"key_generate_prompt_button":False}
@@ -191,13 +192,15 @@ if __name__ == "__main__":
 
     else:
         st.write(" ")
+        st.write(f":red[ **{asterick}** indicates a required field.]")
         st.write(" ")
         st.write(" ")
+
 
         st.subheader("The Job")
         st.write(" ")
         
-        st.write(":red[Copy and paste the job description:]")
+        st.write(f"Copy and paste the job description: :red[**{asterick}**]")
         job_description = st.text_area("Copy and paste the job description here.",label_visibility="collapsed", placeholder="The job description", key="key_job_description", height=300)
 
         st.button('Get keywords', on_click=clicked, args=["key_button_get_keywords"],type="primary")
@@ -214,7 +217,7 @@ if __name__ == "__main__":
                 st.subheader("Keywords")
 
         if keywords:
-            st.markdown(":red[Check the keywords that are relevant to your experience. You'll be able to edit them later.]")
+            st.markdown(f"Check the keywords that are relevant to your experience. You'll be able to edit them later. :red[**{asterick}**]")
 
             keywords_list = keywords.split('; ')
             keywords_list = [x.strip() for x in keywords_list]
@@ -234,7 +237,7 @@ if __name__ == "__main__":
             checked_keywords_string = "; ".join(checked_keywords_list)
 
             st.write(" ")
-            st.markdown(":red[Edit the keywords:]")
+            st.markdown("*(Optional)* Edit the keywords:")
             edit_keywords_string = st.text_area("Edit", value=checked_keywords_string,key="key_relevant_keywords",label_visibility="collapsed")
             
             edit_keywords_list = edit_keywords_string.split('; ')
@@ -261,21 +264,21 @@ if __name__ == "__main__":
                 st.subheader("Your Work History")
                 column1, column2 = st.columns([1.5,1])
                 
-                column1.write(":red[Your position title: ]")
-                your_job_title = column1.text_input("Your position title: ", key = "key_your_title",label_visibility="collapsed")
+                column1.write(f"Your position title: :red[**{asterick}**]")
+                your_job_title = column1.text_input("Your position title: ", key = "key_your_title",label_visibility="collapsed").strip()
                 
                 column1.write(" ")
 
-                column2.write(":red[Years: ]")
+                column2.write(f"Years: :red[**{asterick}**]")
                 years_job = column2.number_input("Years:", value="min", min_value=1,max_value=40, key="key_years_job", label_visibility="collapsed", step=1)
 
                 column2.write(" ")
                 
                 column2.write("*(Optional)* Company: ")
-                company = column2.text_input("Company: ", key = "key_company",label_visibility="collapsed")
+                company = column2.text_input("Company: ", key = "key_company",label_visibility="collapsed").strip()
 
                 column1.write("*(Optional)*  Notes: ")
-                notes = column1.text_area("Notes",key="key_job_notes", label_visibility="collapsed",height=120, placeholder="Add in clients, specific projects, or anything else.")
+                notes = column1.text_area("Notes",key="key_job_notes", label_visibility="collapsed",height=120, placeholder="Add in clients, specific projects, or anything else.").strip()
                 
                 st.write(" ")
                 st.write(" ")
@@ -283,7 +286,7 @@ if __name__ == "__main__":
                 st.subheader("About You")
 
                 st.write("*(Optional)* Add something unique about you to put in your bio: ")
-                unique = st.text_area(f"What makes you unique as a {your_job_title}?",label_visibility="collapsed",placeholder=f"I'm unique as a(n) {your_job_title} because... ", key = "key_unique_job")
+                unique = st.text_area(f"What makes you unique as a {your_job_title}?",label_visibility="collapsed",placeholder=f"I'm unique as a(n) {your_job_title} because... ", key = "key_unique_job").strip()
 
                 generate_prompt = st.button("Generate prompt", type="primary",key="key_generate_prompt_button",on_click=clicked, args=["key_generate_prompt_button"])
                 
@@ -298,7 +301,7 @@ if __name__ == "__main__":
                         display_prompt += f"  \n  \nAdditional notes: **{notes}**"
 
                     if unique:
-                        display_prompt += f"  \n  \n{unique}"
+                        display_prompt += f"  \n  \nAbout me: **{unique}**"
                     
                     st.write(" ")
                     with st.container(border=True):
@@ -310,10 +313,10 @@ if __name__ == "__main__":
                             company_gpt_found = ddg_search(company)
                         with st.container(border=True):
                             company_gpt_found = company_gpt_found.replace("$", "\\$")
-                            st.markdown(f"**ChatGPT searched for {company} and found this:**  \n  \n:blue[**{company_gpt_found}**]")
-
+                            st.markdown(f"**ChatGPT searched for *{company}* and found this:**  \n  \n:blue[**{company_gpt_found}**]")
+                            st.divider()
                             st.write(" ")
-                            st.write(f":red[*(Optional)* Edit the description for {company} here: ]")
+                            st.write(f"*(Optional)* Edit the description for *{company}* here:")
                             company_description = st.text_area("Edit company description", value = company_gpt_found,height=300, label_visibility="collapsed")
 
                             include_checkbox = st.checkbox("Include this description to assist ChatGPT in your résumé generation.",value=True,key="key_checkbox_include_company")
@@ -354,6 +357,5 @@ if __name__ == "__main__":
                             st.caption("**Double check the results for accuracy.**")
     st.write(" ")
     st.write(" ")
-    st.divider()
     st.write(" ")
     st.caption("Created 2024 by Gretchen Vogt — gretchenvogt.com #OpentoWork")
