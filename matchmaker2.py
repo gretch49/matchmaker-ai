@@ -214,7 +214,7 @@ if __name__ == "__main__":
 
             checked_keywords_list = []
             for x in keywords_list:
-                checkbox_value = st.checkbox(x,key=f"key_{x}_{random.randint(1000, 9999)}")
+                checkbox_value = st.checkbox(x,key=f"key_{x}")
                 if checkbox_value:
                     checked_keywords_list.append(x)
 
