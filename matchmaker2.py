@@ -1,3 +1,13 @@
+import subprocess
+
+def install_requirements():
+    try:
+        subprocess.check_call(['pip', 'install', '-r', 'requirements.txt'])
+        print("Requirements installed successfully.")
+    except subprocess.CalledProcessError:
+        print("Failed to install requirements.")
+        
+install_requirements()
 
 import streamlit as st
 import time
@@ -6,7 +16,6 @@ import os
 from langchain_openai import ChatOpenAI
 from langchain_community.tools import DuckDuckGoSearchRun
 from langchain_community.utilities import DuckDuckGoSearchAPIWrapper
-
 
 @st.cache_data(show_spinner=False)
 def get_keywords(description):
