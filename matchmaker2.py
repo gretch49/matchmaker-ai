@@ -199,7 +199,7 @@ if __name__ == "__main__":
 
         ###TESTING
         if job_description:
-            st.session_state.clicked["key_button_get_keywords"]
+            get_keywords_button
 
 
         if st.session_state.clicked["key_button_get_keywords"] and not job_description:
