@@ -354,5 +354,6 @@ if __name__ == "__main__":
                             st.caption("**Double check the results for accuracy.**")
     st.write(" ")
     st.write(" ")
+    st.divider()
     st.write(" ")
     st.caption("Created 2024 by Gretchen Vogt — gretchenvogt.com #OpentoWork")
