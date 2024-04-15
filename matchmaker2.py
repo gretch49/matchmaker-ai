@@ -1,5 +1,6 @@
 import streamlit as st
 import time
+import random
 import os
 from langchain_openai import ChatOpenAI
 from langchain_community.tools import DuckDuckGoSearchRun
@@ -213,7 +214,7 @@ if __name__ == "__main__":
 
             checked_keywords_list = []
             for x in keywords_list:
-                checkbox_value = st.checkbox(x,key=f"key_{x}")
+                checkbox_value = st.checkbox(x,key=f"key_{x}_{random.randint(1000, 9999)}")
                 if checkbox_value:
                     checked_keywords_list.append(x)
 
