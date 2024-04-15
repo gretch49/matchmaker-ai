@@ -198,6 +198,9 @@ if __name__ == "__main__":
 
         if job_description:
             "hi"
+        if st.session_state.clicked["key_button_get_keywords"]:
+            "hello world"
+
 
         if st.session_state.clicked["key_button_get_keywords"] and not job_description:
             st.warning("Enter the job description.", icon='⚠')
