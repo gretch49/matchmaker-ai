@@ -166,8 +166,13 @@ if __name__ == "__main__":
     asterick = "\\*"
 
     if 'clicked' not in st.session_state:
-        st.session_state.clicked = {"key_button_get_keywords":False,"key_button_save_rele_keywords":False,"key_button_go":False,"key_generate_prompt_button":False}
-    
+        st.session_state.clicked = {
+            "key_button_get_keywords": False,
+            "key_button_save_rele_keywords": False,
+            "key_button_go": False,
+            "key_generate_prompt_button": False
+        }
+
     st.header("MatchMaker AI")
     st.write("Match your résumé to the job application with ChatGPT")
     st.subheader(" ", divider='blue')
@@ -203,7 +208,10 @@ if __name__ == "__main__":
         st.write(f"Copy and paste the job description: :red[**{asterick}**]")
         job_description = st.text_area("Copy and paste the job description here.",label_visibility="collapsed", placeholder="The job description", key="key_job_description", height=300)
 
-        st.button('Get keywords', on_click=clicked, args=["key_button_get_keywords"],type="primary")
+        get_keywords_button = st.button('Get keywords', on_click=clicked, args=["key_button_get_keywords"],type="primary")
+        
+        if get_keywords_button:
+            st.session_state.clicked["key_button_get_keywords"] = True
 
         if st.session_state.clicked["key_button_get_keywords"] and not job_description:
             st.warning("Enter the job description.", icon='⚠')
