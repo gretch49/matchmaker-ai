@@ -6,6 +6,7 @@ from langchain_openai import ChatOpenAI
 from langchain_community.tools import DuckDuckGoSearchRun
 from langchain_community.utilities import DuckDuckGoSearchAPIWrapper
 
+
 @st.cache_data(show_spinner=False)
 def get_keywords(description):
     from langchain_openai import ChatOpenAI
@@ -35,6 +36,7 @@ def get_resume_section(your_job_title,years_job, list_keywords, list_keywords_sp
         company_description = ddg_search(company)
 
         func_prompt = f"Write a resume section with 5 bullet points for a {your_job_title} with {years_job} year(s) of experience at '{company}' with the following keywords: [{list_keywords}] The company is described here: [{company_description}] Add in relevant details about the company to the job description."
+
         short_company_bio = get_short_bio(company,company_description)
 
     else:
@@ -74,6 +76,9 @@ def get_resume_bio(your_job_title,years_job, list_keywords, list_keywords_split,
 
     if notes:
         func_prompt += f" Additional notes about this job: {notes}"
+
+    if unique:
+        func_prompt += unique
 
     prompt = f"""
     {func_prompt}
@@ -304,7 +309,7 @@ if __name__ == "__main__":
                             company_gpt_found = ddg_search(company)
                         with st.container(border=True):
                             company_gpt_found = company_gpt_found.replace("$", "\\$")
-                            st.write(f"**ChatGPT searched for {company} and found this:**  \n  \n:blue[**{company_gpt_found}**]")
+                            st.markdown(f"**ChatGPT searched for {company} and found this:**  \n  \n:blue[**{company_gpt_found}**]")
 
                             st.write(" ")
                             st.write(f":red[*(Optional)* Edit the description for {company} here: ]")
