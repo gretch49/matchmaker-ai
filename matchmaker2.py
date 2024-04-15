@@ -158,6 +158,7 @@ if __name__ == "__main__":
     gretchen_key = os.environ.get('GRETCHEN_KEY')
     chatgpt_key = ""
     keywords = None
+    include_checkbox = False
 
     if 'clicked' not in st.session_state:
         st.session_state.clicked = {"key_button_get_keywords":False,"key_button_save_rele_keywords":False,"key_button_go":False,"key_generate_prompt_button":False}
