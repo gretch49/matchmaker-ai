@@ -83,7 +83,7 @@ def get_resume_bio(your_job_title,years_job, list_keywords, list_keywords_split,
     prompt = f"""
     {func_prompt}
     """
-    
+
     response = llm.invoke(prompt)
     response_stripped = response.content.strip(' "')
 
@@ -319,7 +319,7 @@ if __name__ == "__main__":
                             st.write(f"*(Optional)* Edit the description for *{company}* here:")
                             company_description = st.text_area("Edit company description", value = company_gpt_found,height=300, label_visibility="collapsed")
 
-                            include_checkbox = st.checkbox("Include this description to assist ChatGPT in your résumé generation.",value=True,key="key_checkbox_include_company")
+                            include_checkbox = st.checkbox(f"Include this description of *{company}* to assist ChatGPT in your résumé generation.",value=True,key="key_checkbox_include_company")
                             
                         st.write(" ")
 
@@ -357,5 +357,6 @@ if __name__ == "__main__":
                             st.caption("**Double check the results for accuracy.**")
     st.write(" ")
     st.write(" ")
+    st.divider()
     st.write(" ")
     st.caption("Created 2024 by Gretchen Vogt — gretchenvogt.com #OpentoWork")
