@@ -24,47 +24,54 @@ def get_keywords(description):
 
 
 @st.cache_data(show_spinner=False)
-def get_resume_section(your_job_title,years_job, wrapped_list, final_keywords_list, company, notes):
+def get_resume_section(your_job_title,years_job, list_keywords, list_keywords_split, company, notes, include_checkbox):
     llm = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0, api_key=chatgpt_key)
     company_description = ""
-    wrapped_list = [item.lower() for item in wrapped_list]
-    final_keywords_list = [item.lower() for item in final_keywords_list]
+
+    list_keywords = [item.lower() for item in list_keywords]
+    list_keywords_split = [item.lower() for item in list_keywords_split]
+    short_company_bio = None
     
-    if company:
+    if company and include_checkbox:
         company_description = ddg_search(company)
 
-        func_prompt = f"Write a resume section with 5 bullet points for a {your_job_title} with {years_job} year(s) of experience at '{company}' with the following keywords: [{wrapped_list}] The company is descripbed here: [{company_description}]"
+        func_prompt = f"Write a resume section with 5 bullet points for a {your_job_title} with {years_job} year(s) of experience at '{company}' with the following keywords: [{list_keywords}] The company is described here: [{company_description}] Add in relevant details about the company to the job description."
+        short_company_bio = get_short_bio(company,company_description)
+
     else:
-        func_prompt = f"Write a resume section with 5 bullet points for a {your_job_title} with {years_job} year(s) of experience with the following keywords: {wrapped_list}"
+        func_prompt = f"Write a resume section with 5 bullet points for a {your_job_title} with {years_job} year(s) of experience with the following keywords: {list_keywords}"
     if notes:
         func_prompt += f" Additional notes about this job: {notes}"
 
     prompt = f"""
-    {func_prompt} Only use the numbers given to you. Do not use a header.
+    {func_prompt} Do not use a header. Do not make up numbers. 
     """
 
     response = llm.invoke(prompt)
     response_stripped = response.content.strip(' "')
 
-    print(f"\n\n\n {response_stripped}\n\n\n")
+    wrapped_response = wrap_keywords_in_description(response_stripped, list_keywords_split)
 
-    wrapped_response = wrap_keywords_in_description(response_stripped, final_keywords_list)
-
-    return wrapped_response
+    return wrapped_response, short_company_bio
 
 
 
 @st.cache_data(show_spinner=False)
-def get_resume_bio(your_job_title,years_job, wrapped_list, final_keywords_list, company, notes):
+def get_resume_bio(your_job_title,years_job, list_keywords, list_keywords_split, company, notes, unique):
     llm = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0, api_key=chatgpt_key)
 
-    for index, item in enumerate(wrapped_list):
-        wrapped_list[index] = item.lower()
+    for index, item in enumerate(list_keywords):
+        list_keywords[index] = item.lower()
 
-    for index, item in enumerate(final_keywords_list):
-        final_keywords_list[index] = item.lower()
+    for index, item in enumerate(list_keywords_split):
+        list_keywords_split[index] = item.lower()
 
-    func_prompt = f"Write a resume bio about 25 words for a {your_job_title} with {years_job} year(s) of experience with the following keywords:  \n {wrapped_list} \n Don't use all the keywords. Keep the length to about 25 words."
+    if company and include_checkbox:
+        company_description = ddg_search(company)
+        short_company_bio = get_short_bio(company,company_description)
+        func_prompt = f"Write a resume bio about 25 words for a {your_job_title} with {years_job} year(s) of experience at {company}, {short_company_bio} with the following keywords:  \n {list_keywords} \n Don't use all the keywords. Keep the length to about 25 words."
+    else:
+        func_prompt = f"Write a resume bio about 25 words for a {your_job_title} with {years_job} year(s) of experience with the following keywords:  \n {list_keywords} \n Don't use all the keywords. Keep the length to about 25 words."
 
     if notes:
         func_prompt += f" Additional notes about this job: {notes}"
@@ -76,10 +83,8 @@ def get_resume_bio(your_job_title,years_job, wrapped_list, final_keywords_list, 
     response = llm.invoke(prompt)
     response_stripped = response.content.strip(' "')
 
-    wrapped_response = wrap_job_details(response_stripped, your_job_title, years_job, company, notes)
-    wrapped_response = wrap_keywords_in_description(wrapped_response, final_keywords_list)
-
-    
+    wrapped_response = wrap_job_details(response_stripped, your_job_title, years_job)
+    wrapped_response = wrap_keywords_in_description(wrapped_response, list_keywords_split)
 
     return wrapped_response
 
@@ -102,7 +107,7 @@ def wrap_keywords_in_description(description, keywords):
 
 
 @st.cache_data(show_spinner=False)
-def wrap_job_details(description, your_job_title, years_job, company, notes):
+def wrap_job_details(description, your_job_title, years_job):
     years_job = str(years_job) + " years"
     keywords = [your_job_title, years_job]
 
@@ -115,38 +120,34 @@ def wrap_job_details(description, your_job_title, years_job, company, notes):
 
 @st.cache_data(show_spinner=False)
 def ddg_search(company):
-    wrapper = DuckDuckGoSearchAPIWrapper(max_results=1)
+    wrapper = DuckDuckGoSearchAPIWrapper(max_results=10)
     search = DuckDuckGoSearchRun(api_wrapper=wrapper)
 
-    # company_description = search.run(f'Search for a description of the company {company}')
-    company_description = """
-    Every solution we launch starts with people.
-    We uncover actionable insights about your users. Then we apply them to a rigorous design and prototyping process that complements your business strategy and generates real value.
-    This is how we deliver new products, new digital experiences, and new ways of working that drive growth and foster continuous innovation.
-    …anticipate who their next billion users will be — and design a user experience strategy that will meet those users’ emerging needs.
-    …define how they manage Trust and Safety with a global community of 1.8 billion users.
-    …drive long-term brand loyalty through a digital experience that makes teen athletes feel like pros.
-    …reduce their customer support backlog from weeks to seconds.
-    …use apps and personalized medicine to reduce pill burden, increase lifetime value, and improve patient outcomes.
-    …develop tools and strategies for transforming from shipping cars to shipping digital products.
-    Let’s talk.
-    Spark new growth opportunities.
-    Accelerate your culture of innovation.
-    Create breakthrough products and experiences.
-    Transform the way you do business.
-    Copyright © 2023 IA Collaborative Holdings, LLC. All rights reserved.
-    """
-    print(f"\n\n{company_description}\n\n")
+    company_description = search.run(f'Search for a description of the company {company}')
 
     llm = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
     prompt = f"""
-    Describe this company [{company}] with this description scraped from the web: [{company_description}] If the description does not seem to match, reply "No relevant description found."
+    Summarize the description this company [{company}] with several possible descriptions scraped from the web: [{company_description}] 
+    
+    Use the relevant information and ignore the rest. If the descriptions do not seem to match, reply "No relevant description found."
     """
 
     response = llm.invoke(prompt)
     response_stripped = response.content.strip(' "')
 
     return(response_stripped)
+
+
+
+@st.cache_data(show_spinner=False)
+def get_short_bio(company,company_description):
+    llm = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0, api_key=chatgpt_key)
+
+    short_company_bio = llm.invoke(f"Write a '5-10 word' summary about the company {company} based on the description: [{company_description}] Return in the format: {company}, description")
+
+    short_company_bio = short_company_bio.content.strip(' "')
+
+    return short_company_bio
 
 
 
@@ -212,6 +213,8 @@ if __name__ == "__main__":
             keywords_list = keywords.split('; ')
             keywords_list = [x.strip() for x in keywords_list]
 
+            keywords_list = list(set(keywords_list))
+
             checked_keywords_list = []
             for x in keywords_list:
                 checkbox_value = st.checkbox(x,key=f"key_{x}")
@@ -231,12 +234,10 @@ if __name__ == "__main__":
             edit_keywords_list = edit_keywords_string.split('; ')
             edit_keywords_list = [x.strip() for x in edit_keywords_list]
 
-            final_keywords_list = []
+            list_keywords_split = []
             for keyword_string in edit_keywords_list:
                 keywords = keyword_string.split()
-                final_keywords_list.extend(keywords)
-
-            # wrapped_list = ["[[[" + x.strip() + "]]]" for x in edit_keywords_list]
+                list_keywords_split.extend(keywords)
 
             save_keywords_button = st.button('Save your relevant keywords', on_click=clicked, args=["key_button_save_rele_keywords"], type="primary")
 
@@ -264,23 +265,34 @@ if __name__ == "__main__":
 
                 column2.write(" ")
                 
-                column2.write("(Optional) Company: ")
+                column2.write("*(Optional)* Company: ")
                 company = column2.text_input("Company: ", key = "key_company",label_visibility="collapsed")
 
-                column1.write("(Optional)  Notes: ")
+                column1.write("*(Optional)*  Notes: ")
                 notes = column1.text_area("Notes",key="key_job_notes", label_visibility="collapsed",height=120, placeholder="Add in clients, specific projects, or anything else.")
+                
+                st.write(" ")
+                st.write(" ")
+                st.write(" ")
+                st.subheader("About You")
+
+                st.write("*(Optional)* Add something unique about you to put in your bio: ")
+                unique = st.text_area(f"What makes you unique as a {your_job_title}?",label_visibility="collapsed",placeholder=f"I'm unique as a(n) {your_job_title} because... ", key = "key_unique_job")
 
                 generate_prompt = st.button("Generate prompt", type="primary",key="key_generate_prompt_button",on_click=clicked, args=["key_generate_prompt_button"])
                 
                 if your_job_title and st.session_state.clicked["key_generate_prompt_button"]:
                     st.write(" ")
                     if company:
-                        display_prompt = f"Write a résumé section with 5 bullet points for a **{your_job_title}** with **{years_job} year(s) of experience** at **{company}** with the following keywords:  \n  \n  :blue[**{edit_keywords_string}**]"
+                        display_prompt = f"Write a résumé bio and a work section with 5 bullet points for a(n) **{your_job_title}** with **{years_job} year(s) of experience** at **{company}** with the following keywords:  \n  \n  :blue[**{edit_keywords_string}**]"
                     else:
-                        display_prompt = f"Write a résumé section with 5 bullet points for a **{your_job_title}** with **{years_job} year(s) of experience** with the following keywords:   \n  :blue[**{edit_keywords_string}**]"
+                        display_prompt = f"Write a résumé bio and a work section with 5 bullet points for a(n) **{your_job_title}** with **{years_job} year(s) of experience** with the following keywords:   \n  :blue[**{edit_keywords_string}**]"
 
                     if notes:
                         display_prompt += f"  \n  \nAdditional notes: **{notes}**"
+
+                    if unique:
+                        display_prompt += f"  \n  \n{unique}"
                     
                     st.write(" ")
                     with st.container(border=True):
@@ -288,10 +300,18 @@ if __name__ == "__main__":
                     st.write(" ")
 
                     if company:
-                        company_description = ddg_search(company)
+                        with st.spinner(f'Searching the web for {company} . . .'):
+                            company_gpt_found = ddg_search(company)
                         with st.container(border=True):
-                            st.write(f"**ChatGPT searched for {company} and found this:**  \n  \n:blue[**{company_description}**]")
-                            include_checkbox = st.checkbox("Include this description to assist ChatGPT in your résumé generation.",value=True)
+                            company_gpt_found = company_gpt_found.replace("$", "\\$")
+                            st.write(f"**ChatGPT searched for {company} and found this:**  \n  \n:blue[**{company_gpt_found}**]")
+
+                            st.write(" ")
+                            st.write(f":red[*(Optional)* Edit the description for {company} here: ]")
+                            company_description = st.text_area("Edit company description", value = company_gpt_found,height=300, label_visibility="collapsed")
+
+                            include_checkbox = st.checkbox("Include this description to assist ChatGPT in your résumé generation.",value=True,key="key_checkbox_include_company")
+                            
                         st.write(" ")
 
 
@@ -299,8 +319,8 @@ if __name__ == "__main__":
                     
                     if button_go:
                         with st.spinner('Creating résumé section . . .'):    
-                            resume_section_result = get_resume_section(your_job_title,years_job, edit_keywords_list,final_keywords_list, company, notes)
-                            resume_bio_result = get_resume_bio(your_job_title,years_job, edit_keywords_list,final_keywords_list, company, notes)
+                            resume_section_result,short_company_bio = get_resume_section(your_job_title,years_job, edit_keywords_list,list_keywords_split, company, notes, include_checkbox)
+                            resume_bio_result = get_resume_bio(your_job_title,years_job, edit_keywords_list,list_keywords_split, company, notes, unique)
 
                             st.write(" ")
                             st.write(" ")
@@ -314,7 +334,9 @@ if __name__ == "__main__":
                                 st.markdown(resume_bio_result)
                                 st.divider()
 
-                                if company:
+                                if short_company_bio:
+                                    st.write(f"EXPERIENCE at **{short_company_bio}**")
+                                elif company:
                                     st.write(f"EXPERIENCE at **{company}**")
                                 else: 
                                     st.write("EXPERIENCE")
@@ -325,6 +347,3 @@ if __name__ == "__main__":
 
                             st.caption("**Double check the results for accuracy.**")
                             print("\n\n\n"+"##$$$%"*10+"\n\n\n")
-
-                            answer = ddg_search(company)
-                            print(f"\n\n\n{answer}\n\n\n")
