@@ -36,6 +36,7 @@ def get_resume_section(your_job_title,years_job, list_keywords, list_keywords_sp
         company_description = ddg_search(company)
 
         func_prompt = f"Write a resume section with 5 bullet points for a {your_job_title} with {years_job} year(s) of experience at '{company}' with the following keywords: [{list_keywords}] The company is described here: [{company_description}] Add in relevant details about the company to the job description."
+
         short_company_bio = get_short_bio(company,company_description)
 
     else:
@@ -50,7 +51,7 @@ def get_resume_section(your_job_title,years_job, list_keywords, list_keywords_sp
     response = llm.invoke(prompt)
     response_stripped = response.content.strip(' "')
 
-    wrapped_response = wrap_keywords_in_description(response_stripped, list_keywords_split)
+    wrapped_response = wrap_keywords_in_description(response_stripped, list_keywords)
 
     return wrapped_response, short_company_bio
 
@@ -87,7 +88,7 @@ def get_resume_bio(your_job_title,years_job, list_keywords, list_keywords_split,
     response_stripped = response.content.strip(' "')
 
     wrapped_response = wrap_job_details(response_stripped, your_job_title, years_job)
-    wrapped_response = wrap_keywords_in_description(wrapped_response, list_keywords_split)
+    wrapped_response = wrap_keywords_in_description(wrapped_response, list_keywords)
 
     return wrapped_response
 
@@ -103,7 +104,7 @@ def clicked(button):
 def wrap_keywords_in_description(description, keywords):
 
     for keyword in keywords:
-        description = description.replace(keyword.lower(), ":blue[**" + keyword + "**]")
+        description = description.replace(keyword.lower(), ":blue[" + keyword + "]")
 
     return description
 
@@ -158,6 +159,7 @@ if __name__ == "__main__":
     from dotenv import load_dotenv, find_dotenv
     load_dotenv(find_dotenv(), override=True)
     gretchen_key = os.environ.get('GRETCHEN_KEY')
+    friends_key = os.environ.get('FRIENDS_KEY')
     chatgpt_key = ""
     keywords = None
     include_checkbox = False
@@ -170,11 +172,11 @@ if __name__ == "__main__":
     st.subheader(" ", divider='blue')
 
     with st.sidebar:
-        sidebar_key = st.sidebar.text_input("OpenAI API Key").strip()
+        sidebar_key = st.sidebar.text_input("OpenAI API Key:").strip()
         st.sidebar.button("Enter key")
         st.sidebar.write(" ")
 
-        if sidebar_key == gretchen_key: 
+        if sidebar_key == gretchen_key or sidebar_key == friends_key: 
             st.success("You're using Gretchen's key. :tada:")
             chatgpt_key = os.environ.get('OPENAI_API_KEY')
         elif sidebar_key and not sidebar_key.startswith('sk-'):
@@ -308,7 +310,7 @@ if __name__ == "__main__":
                             company_gpt_found = ddg_search(company)
                         with st.container(border=True):
                             company_gpt_found = company_gpt_found.replace("$", "\\$")
-                            st.write(f"**ChatGPT searched for {company} and found this:**  \n  \n:blue[**{company_gpt_found}**]")
+                            st.markdown(f"**ChatGPT searched for {company} and found this:**  \n  \n:blue[**{company_gpt_found}**]")
 
                             st.write(" ")
                             st.write(f":red[*(Optional)* Edit the description for {company} here: ]")
