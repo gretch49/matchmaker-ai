@@ -196,6 +196,9 @@ if __name__ == "__main__":
 
         get_keywords_button = st.button('Get keywords', on_click=clicked, args=["key_button_get_keywords"],type="primary")
 
+	if job_description:
+		st.write("hi")
+
         if st.session_state.clicked["key_button_get_keywords"] and not job_description:
             st.warning("Enter the job description.", icon='⚠')
 
