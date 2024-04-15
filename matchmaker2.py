@@ -205,7 +205,7 @@ if __name__ == "__main__":
         if st.session_state.clicked["key_button_get_keywords"] and not job_description:
             st.warning("Enter the job description.", icon='⚠')
 
-        if job_description and st.session_state.clicked["key_button_get_keywords"]:
+        if job_description and get_keywords_button:
             with st.spinner('Scanning job description for keywords . . .'):
                 keywords = get_keywords(job_description)
                 
