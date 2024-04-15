@@ -258,6 +258,9 @@ if __name__ == "__main__":
 
             save_keywords_button = st.button('Save your relevant keywords', on_click=clicked, args=["key_button_save_rele_keywords"], type="primary")
 
+            if save_keywords_button:
+                st.session_state.clicked["key_button_save_rele_keywords"] = True
+
             if checked_keywords_string and save_keywords_button:
                 st.write(" ")
                 container = st.empty()
@@ -297,6 +300,10 @@ if __name__ == "__main__":
                 unique = st.text_area(f"What makes you unique as a {your_job_title}?",label_visibility="collapsed",placeholder=f"I'm unique as a(n) {your_job_title} because... ", key = "key_unique_job").strip()
 
                 generate_prompt = st.button("Generate prompt", type="primary",key="key_generate_prompt_button",on_click=clicked, args=["key_generate_prompt_button"])
+
+            if generate_prompt:
+                st.session_state.clicked["key_generate_prompt_button"] = True
+
                 
                 if your_job_title and st.session_state.clicked["key_generate_prompt_button"]:
                     st.write(" ")
