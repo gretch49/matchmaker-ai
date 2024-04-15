@@ -301,8 +301,8 @@ if __name__ == "__main__":
 
                 generate_prompt = st.button("Generate prompt", type="primary",key="key_generate_prompt_button",on_click=clicked, args=["key_generate_prompt_button"])
 
-            if generate_prompt:
-                st.session_state.clicked["key_generate_prompt_button"] = True
+                if generate_prompt:
+                    st.session_state.clicked["key_generate_prompt_button"] = True
 
                 
                 if your_job_title and st.session_state.clicked["key_generate_prompt_button"]:
