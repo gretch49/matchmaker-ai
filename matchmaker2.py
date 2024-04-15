@@ -194,7 +194,11 @@ if __name__ == "__main__":
         st.write(":red[Copy and paste the job description:]")
         job_description = st.text_area("Copy and paste the job description here.",label_visibility="collapsed", placeholder="The job description", key="key_job_description", height=300)
 
-        get_keywords_button = st.button('Get keywords', on_click=clicked, args=["key_button_get_keywords"],type="primary")
+        get_keywords_button = st.button('Get keywords', on_click=clicked("key_button_get_keywords"), args=["key_button_get_keywords"],type="primary")
+
+        ###TESTING
+        if job_description:
+            st.session_state.clicked["key_button_get_keywords"]
 
 
         if st.session_state.clicked["key_button_get_keywords"] and not job_description:
