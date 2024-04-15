@@ -1,9 +1,8 @@
+# # streamlit run matchmaker.py
 import streamlit as st
 import time
 import os
 from langchain_openai import ChatOpenAI
-from langchain_community.tools import DuckDuckGoSearchRun
-from langchain_community.utilities import DuckDuckGoSearchAPIWrapper
 
 
 @st.cache_data(show_spinner=False)
@@ -23,104 +22,23 @@ def get_keywords(description):
 
 
 @st.cache_data(show_spinner=False)
-def get_resume_section(your_job_title,years_job, wrapped_list, final_keywords_list, company, notes):
+def get_resume_section(initial_prompt):
     llm = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0, api_key=chatgpt_key)
-    
-    wrapped_list = [item.lower() for item in wrapped_list]
-    final_keywords_list = [item.lower() for item in final_keywords_list]
-    
-    if company:
-        func_prompt = f"Write a resume section with 5 bullet points for a {your_job_title} with {years_job} year(s) of experience at '{company}' with the following keywords: {wrapped_list}"
-    else:
-        func_prompt = f"Write a resume section with 5 bullet points for a {your_job_title} with {years_job} year(s) of experience with the following keywords: {wrapped_list}"
-    if notes:
-        func_prompt += f" Additional notes about this job: {notes}"
-
     prompt = f"""
-    {func_prompt} Only use the numbers given to you. Do not use a header.
+    {initial_prompt} Do not make up numbers. Do not use a header. When you use a keyword from the list, wrap it like so: [[[keyword]]]
     """
-
     response = llm.invoke(prompt)
     response_stripped = response.content.strip(' "')
 
-    wrapped_response = wrap_keywords_in_description(response_stripped, final_keywords_list)
+    blueify = response_stripped.replace("[[[", ":blue[**")
+    blueify = blueify.replace("]]]", "**]")
 
-    return wrapped_response
-
-
-
-@st.cache_data(show_spinner=False)
-def get_resume_bio(your_job_title,years_job, wrapped_list, final_keywords_list, company, notes):
-    llm = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0, api_key=chatgpt_key)
-    # wrapper = DuckDuckGoSearchAPIWrapper(max_results=1)
-    
-    # if company:
-    #     search = DuckDuckGoSearchRun()
-    #     print(company)
-    #     company_description = search.run(f'Search for the homepage of the company {company}')
-
-    #     print("\n\n\n"+"##$$$%"*10+"\n")
-    #     print(company_description)
-    #     print("\n"+"##$$$%"*10+"\n\n\n")
-
-    for index, item in enumerate(wrapped_list):
-        wrapped_list[index] = item.lower()
-
-    for index, item in enumerate(final_keywords_list):
-        final_keywords_list[index] = item.lower()
-
-    func_prompt = f"Write a resume bio about 25 words for a {your_job_title} with {years_job} year(s) of experience with the following keywords:  \n {wrapped_list} \n"
-
-    if notes:
-        func_prompt += f" Additional notes about this job: {notes}"
-
-    prompt = f"""
-    {func_prompt}
-    """
-
-    response = llm.invoke(prompt)
-    response_stripped = response.content.strip(' "')
-
-    print(f"\n\n\n{response_stripped}\n\n\n")
-
-    wrapped_response = wrap_job_details(response_stripped, your_job_title, years_job, company, notes)
-    wrapped_response = wrap_keywords_in_description(wrapped_response, final_keywords_list)
-
-    
-
-    return wrapped_response
+    return blueify
 
 
 
-@st.cache_data(show_spinner=False)
 def clicked(button):
     st.session_state.clicked[button] = True
-
-
-
-@st.cache_data(show_spinner=False)
-def wrap_keywords_in_description(description, keywords):
-
-    for keyword in keywords:
-        description = description.replace(keyword.lower(), ":blue[**" + keyword + "**]")
-
-    return description
-
-
-
-@st.cache_data(show_spinner=False)
-def wrap_job_details(description, your_job_title, years_job, company, notes):
-    years_job = str(years_job) + " years"
-    keywords = [your_job_title, years_job]
-
-    for keyword in keywords:
-        description = description.replace(keyword.lower(), "**" + keyword + "**")
-
-    return description
-
-
-
-
 
 
 
@@ -132,18 +50,22 @@ if __name__ == "__main__":
     keywords = None
 
     if 'clicked' not in st.session_state:
-        st.session_state.clicked = {"key_button_get_keywords":False,"key_button_save_rele_keywords":False,"key_button_go":False,"key_generate_prompt_button":False}
+        st.session_state.clicked = {"key_button_get_keywords":False,"key_button_save_rele_keywords":False,"key_button_go":False}
     
     st.header("MatchMaker AI")
     st.write("Match your resume to the job application with ChatGPT")
-    st.subheader(" ", divider='blue')
+    st.subheader(" ", divider='rainbow')
 
     with st.sidebar:
-        sidebar_key = st.sidebar.text_input("OpenAI API Key").strip()
+        sidebar_key = st.sidebar.text_input("OpenAI API Key")
         st.sidebar.button("Enter key")
         st.sidebar.write(" ")
 
-        if sidebar_key == gretchen_key: 
+        if sidebar_key == gretchen_key:
+            # container = st.sidebar.empty()
+            # container.success("You used Gretchen's key. :tada:") 
+            # time.sleep(1.5)
+            # container.empty()  
             st.success("You're using Gretchen's key. :tada:")
             chatgpt_key = os.environ.get('OPENAI_API_KEY')
         elif sidebar_key and not sidebar_key.startswith('sk-'):
@@ -167,7 +89,8 @@ if __name__ == "__main__":
         st.write(":red[Copy and paste the job description:]")
         job_description = st.text_area("Copy and paste the job description here.",label_visibility="collapsed", placeholder="The job description", key="key_job_description", height=300)
 
-        get_keywords_button = st.button('Get keywords', on_click=clicked, args=["key_button_get_keywords"],type="primary")
+        st.button('Get keywords', on_click=clicked, args=["key_button_get_keywords"],type="primary")
+
         if st.session_state.clicked["key_button_get_keywords"] and not job_description:
             st.warning("Enter the job description.", icon='⚠')
 
@@ -187,7 +110,7 @@ if __name__ == "__main__":
 
             checked_keywords_list = []
             for x in keywords_list:
-                checkbox_value = st.checkbox(x,key=f"key_{x}")
+                checkbox_value = st.checkbox(x.capitalize(),key=f"key_{x}")
                 if checkbox_value:
                     checked_keywords_list.append(x)
         
@@ -200,15 +123,9 @@ if __name__ == "__main__":
             
             edit_keywords_list = edit_keywords_string.split('; ')
             edit_keywords_list = [x.strip() for x in edit_keywords_list]
+            wrapped_list = ["[[[" + x.strip() + "]]]" for x in edit_keywords_list]
 
-            final_keywords_list = []
-            for keyword_string in edit_keywords_list:
-                keywords = keyword_string.split()
-                final_keywords_list.extend(keywords)
-
-            # wrapped_list = ["[[[" + x.strip() + "]]]" for x in edit_keywords_list]
-
-            save_keywords_button = st.button('Save your relevant keywords', on_click=clicked, args=["key_button_save_rele_keywords"], type="primary")
+            save_keywords_button = st.button('Save keywords', on_click=clicked, args=["key_button_save_rele_keywords"], type="primary")
 
             if checked_keywords_string and save_keywords_button:
                 st.write(" ")
@@ -225,7 +142,7 @@ if __name__ == "__main__":
                 column1, column2 = st.columns([1.5,1])
                 
                 column1.write(":red[Your position title: ]")
-                your_job_title = column1.text_input("Your position title: ", key = "key_your_title",label_visibility="collapsed")
+                your_job_title = column1.text_input("Your position title: ", key = "key_your_title",label_visibility="collapsed").upper()
                 
                 column1.write(" ")
 
@@ -237,32 +154,36 @@ if __name__ == "__main__":
                 column2.write("(Optional) Company: ")
                 company = column2.text_input("Company: ", key = "key_company",label_visibility="collapsed")
 
+
                 column1.write("(Optional)  Notes: ")
                 notes = column1.text_area("Notes",key="key_job_notes", label_visibility="collapsed",height=120, placeholder="Add in clients, specific projects, or anything else.")
 
-                generate_prompt = st.button("Generate prompt", type="primary",key="key_generate_prompt_button",on_click=clicked, args=["key_generate_prompt_button"])
-                
-                if your_job_title and st.session_state.clicked["key_generate_prompt_button"]:
+                if your_job_title:
                     st.write(" ")
                     if company:
-                        display_prompt = f"Write a resume section with 5 bullet points for a **{your_job_title}** with **{years_job} year(s) of experience** at **{company}** with the following keywords:  \n  \n  :blue[**{edit_keywords_string}**]"
+                        display_prompt = f"Write a resume section with 5 bullet points for a {your_job_title} with {years_job} year(s) of experience at '{company}' with the following keywords:  \n  :blue[{edit_keywords_string}]"
                     else:
-                        display_prompt = f"Write a resume section with 5 bullet points for a **{your_job_title}** with **{years_job} year(s) of experience** with the following keywords:   \n  :blue[**{edit_keywords_string}**]"
+                        display_prompt = f"Write a resume section with 5 bullet points for a {your_job_title} with {years_job} year(s) of experience with the following keywords:   \n  :blue[{edit_keywords_string}]"
 
                     if notes:
-                        display_prompt += f"  \n  \nAdditional notes: **{notes}**"
+                        display_prompt += f"  \n  \nAdditional notes: {notes}"
                     
-                    st.write(" ")
                     with st.container(border=True):
-                        st.markdown(f'**ChatGPT will receive this prompt:**  \n  \n {display_prompt}\n')
+                        st.markdown(f'**ChatGPT will receive this prompt:**  \n  \n{display_prompt}\n')
                     st.write(" ")
 
+                    if company:
+                        func_prompt = f"Write a resume section with 5 bullet points for a {your_job_title} with {years_job} year(s) of experience at '{company}' with the following keywords: {wrapped_list}"
+                    else:
+                        func_prompt = f"Write a resume section with 5 bullet points for a {your_job_title} with {years_job} year(s) of experience with the following keywords: {wrapped_list}"
+                    if notes:
+                        func_prompt += f" Additional notes about this job: {notes}"
+                    
                     button_go = st.button('Generate resume section', on_click=clicked, args=["key_button_go"], type="primary")
                     
                     if button_go:
                         with st.spinner('Creating resume section . . .'):    
-                            resume_section_result = get_resume_section(your_job_title,years_job, edit_keywords_list,final_keywords_list, company, notes)
-                            resume_bio_result = get_resume_bio(your_job_title,years_job, edit_keywords_list,final_keywords_list, company, notes)
+                            resume_result = get_resume_section(func_prompt)
                             
                             st.write(" ")
                             st.write(" ")
@@ -271,16 +192,8 @@ if __name__ == "__main__":
 
                             with st.container(border=True):
                                 st.write("BIO")
-                                st.markdown(resume_bio_result)
+                                st.write("*lorem ipsum for now*")
                                 st.divider()
-
-                                if company:
-                                    st.write(f"EXPERIENCE at **{company}**")
-                                else: 
-                                    st.write("EXPERIENCE")
-
-                                st.markdown(resume_section_result)
-                            st.caption("Please note: The highlighted text is provided for your convenience. Not all keywords may be highlighted if the text was changed slightly. It is strongly advised that you refrain from highlighting keywords in your resume.")
-
-                            st.caption("**Double check the results for accuracy.**")
-                            print("\n\n\n"+"##$$$%"*10+"\n\n\n")
+                                st.write("EXPERIENCE")
+                                st.markdown(resume_result)
+                            st.markdown("*NB: The highlight is for your benefit. It is recommended you* ***do not*** *highlight the keywords in your resume PDF.*")
