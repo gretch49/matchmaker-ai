@@ -352,4 +352,7 @@ if __name__ == "__main__":
                             st.caption("Please note: The highlighted text is provided for your convenience. Not all keywords may be highlighted if the text was changed slightly. It is strongly advised that you refrain from highlighting keywords in your résumé.")
 
                             st.caption("**Double check the results for accuracy.**")
-                            print("\n\n\n"+"##$$$%"*10+"\n\n\n")
+    st.write(" ")
+    st.write(" ")
+    st.write(" ")
+    st.caption("Created 2024 by Gretchen Vogt — gretchenvogt.com #OpentoWork")
