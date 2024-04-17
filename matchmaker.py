@@ -65,7 +65,7 @@ def ddg_search(company):
 @st.cache_data(show_spinner=False)
 def get_bio(unique,relevant_keywords_list,experience_1,experience_2,experience_3):
     llm = ChatOpenAI(model='gpt-3.5-turbo-0125', temperature=0, api_key=chatgpt_key)
-    job_details = f'{experience_1['job_title']}, {experience_2['job_title']}, {experience_3['job_title']}'
+    job_details = f"{experience_1['job_title']}, {experience_2['job_title']}, {experience_3['job_title']}"
 
     prompt = f'''
     Write a 3-sentence, unique resume bio for a {job_details} based on this information [{unique}] and using these keywords [{relevant_keywords_list}]
@@ -123,7 +123,7 @@ def get_experience(i,keywords_string):
             else:
                 display = f'Write a résumé work section with 5 bullet points for a(n) **{experience['job_title']}** with **{experience['years_job']} year(s) of experience** with the following keywords:  \n  \n  :blue[**{keywords_string}**]'
             if experience['notes']:
-                display = (f'{display}  \n  \nAdditional notes: {experience['notes']}')
+                display = (f"{display}  \n  \nAdditional notes: {experience['notes']}")
             st.markdown(display)
             st.write(' ')
 
@@ -291,9 +291,9 @@ if __name__ == '__main__':
             i = 1
             for x in keywords_list:
                 if x.islower():
-                    checkbox_value = st.checkbox(f'{i}\\. {x.capitalize()}',key=f'checkbox {x}')
+                    checkbox_value = st.checkbox(f"{i}\\. {x.capitalize()}",key=f'checkbox {x}')
                 else:
-                    checkbox_value = st.checkbox(f'{i}\\. {x}',key=f'checkbox {x}')
+                    checkbox_value = st.checkbox(f"{i}\\. {x}",key=f'checkbox {x}')
                 i += 1
                 if checkbox_value:
                     relevant_keywords_list.append(x)
@@ -319,7 +319,7 @@ if __name__ == '__main__':
                 st.session_state.clicked['save_relevant_keywords_button'] = True
 
             if save_keywords_button and not edited_keywords_string:
-                st.warning('Select keywords from the list or add your own.', icon="⚠️")
+                st.warning('Select keywords from the list or add your own.',icon="⚠")
             elif save_keywords_button and edited_keywords_string:
             # Show success state for a moment when button is pressed
                 st.write(' ')
@@ -372,7 +372,7 @@ if __name__ == '__main__':
                 st.write(' ')
                 st.write(' ')
                 st.write('*(Optional)* Add something unique about you to put in your bio: ')
-                unique = st.text_area(f"What makes you unique",label_visibility='collapsed',placeholder=f"I'm unique as a(n) {experience_1['job_title']} because... ", key = 'key_unique_job').strip()
+                unique = st.text_area(f'What makes you unique',label_visibility='collapsed',placeholder=f"I'm unique as a(n) {experience_1['job_title']} because... ", key = 'key_unique_job').strip()
                 st.write(' ')
                 st.write(' ')
 
