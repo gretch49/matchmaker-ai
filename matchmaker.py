@@ -278,7 +278,7 @@ if __name__ == '__main__':
 
         # Remind user to give job description before asking for the keywords
         if st.session_state.clicked['get_keywords_button'] and not job_description:
-            st.warning('Enter the job description.', icon='⚠')
+            st.warning('Enter the job description.', icon="⚠")
         #Get the keywords
         elif st.session_state.clicked['get_keywords_button'] and job_description:
             with st.spinner('Scanning job description for the most likely ATS keywords . . .'):
@@ -319,7 +319,7 @@ if __name__ == '__main__':
                 st.session_state.clicked['save_relevant_keywords_button'] = True
 
             if save_keywords_button and not edited_keywords_string:
-                st.warning('Select keywords from the list or add your own.', icon='⚠')
+                st.warning('Select keywords from the list or add your own.', icon="⚠")
             elif save_keywords_button and edited_keywords_string:
             # Show success state for a moment when button is pressed
                 st.write(' ')
