@@ -242,10 +242,10 @@ if __name__ == '__main__':
         st.sidebar.write(' ')
 
         if sidebar_key == gretchen_key or sidebar_key == friends_key: 
-            st.success('You're using Gretchen's key. :tada:')
+            st.success("You're using Gretchen's key. :tada:")
             chatgpt_key = os.environ.get('OPENAI_API_KEY')
         elif sidebar_key and not sidebar_key.startswith('sk-'):
-            st.error('Double-check your OpenAI API key! If you try to use this, you'll get an error.')
+            st.error("Double-check your OpenAI API key! If you try to use this, you'll get an error.", icon='⚠')
         elif sidebar_key:
             st.success('Key saved for the duration of this session.')
             st.info('Close the sidebar to hide your key.')
@@ -254,7 +254,7 @@ if __name__ == '__main__':
     # Main page
     st.header('MatchMakerAI')
     st.write(' ')
-    st.write('**Boost your résumé with tailored keywords to beat ATS and match with your dream job.** Stand out from the crowd with MatchmakerAI's advanced keyword optimization tools. Take the next step towards your dream career.')
+    st.write("**Boost your résumé with tailored keywords to beat ATS and match with your dream job.** Stand out from the crowd with MatchmakerAI's advanced keyword optimization tools. Take the next step towards your dream career.")
     
 
     st.subheader(' ', divider='blue')
@@ -268,7 +268,7 @@ if __name__ == '__main__':
         st.subheader('The Job')
         col1,col2=st.columns(2)
         col1.write(f'Copy and paste a job description here: :red[**{asterick}**]')
-        col2.markdown('<div style='text-align: right; color: red; '>* indicates a required field.</div>', unsafe_allow_html=True)
+        col2.markdown("<div style='text-align: right; color: red; '>* indicates a required field.</div>", unsafe_allow_html=True)
 
         job_description = st.text_area('Copy and paste the job description here.',label_visibility='collapsed', placeholder='Job description', key='job_description', height=300)
         get_keywords_button = st.button('Get most likely ATS keywords', on_click=clicked, args=['get_keywords_button'],type='primary')
@@ -278,7 +278,7 @@ if __name__ == '__main__':
 
         # Remind user to give job description before asking for the keywords
         if st.session_state.clicked['get_keywords_button'] and not job_description:
-            st.warning('Enter the job description.')
+            st.warning('Enter the job description.', icon="⚠️")
         #Get the keywords
         elif st.session_state.clicked['get_keywords_button'] and job_description:
             with st.spinner('Scanning job description for the most likely ATS keywords . . .'):
@@ -286,7 +286,7 @@ if __name__ == '__main__':
                 st.write(' ')
                 st.write(' ')
                 st.subheader('Keywords')
-            st.markdown(f'Check the keywords that are relevant to your experience. You'll be able to edit them later. :red[**{asterick}**]')
+            st.markdown(f"Check the keywords that are relevant to your experience. You'll be able to edit them later. :red[**{asterick}**]")
             
             i = 1
             for x in keywords_list:
@@ -319,7 +319,7 @@ if __name__ == '__main__':
                 st.session_state.clicked['save_relevant_keywords_button'] = True
 
             if save_keywords_button and not edited_keywords_string:
-                st.warning('Select keywords from the list or add your own.')
+                st.warning('Select keywords from the list or add your own.', icon="⚠️")
             elif save_keywords_button and edited_keywords_string:
             # Show success state for a moment when button is pressed
                 st.write(' ')
@@ -372,7 +372,7 @@ if __name__ == '__main__':
                 st.write(' ')
                 st.write(' ')
                 st.write('*(Optional)* Add something unique about you to put in your bio: ')
-                unique = st.text_area(f'What makes you unique',label_visibility='collapsed',placeholder=f'I'm unique as a(n) {experience_1['job_title']} because... ', key = 'key_unique_job').strip()
+                unique = st.text_area(f"What makes you unique",label_visibility='collapsed',placeholder=f"I'm unique as a(n) {experience_1['job_title']} because... ", key = 'key_unique_job').strip()
                 st.write(' ')
                 st.write(' ')
 
