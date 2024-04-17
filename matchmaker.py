@@ -18,7 +18,7 @@ def get_keywords(description):
     Separate the keywords with semi-colons. Keep each keyword short, 1-3 words max. Use a single line. Do not use any periods at the end.'''
     response = llm.invoke(prompt)
 
-    keywords = response.content.strip(' '')
+    keywords = response.content.strip(' "')
     keywords = keywords.replace('.','')
     keywords = keywords.strip()
     keywords_list = keywords.split('; ')
@@ -48,7 +48,7 @@ def ddg_search(company):
     '''
     with st.spinner(f'Searching for the web for {company}...'):
         response = llm.invoke(prompt)
-        response = response.content.strip(' '')
+        response = response.content.strip(' "')
         response = response.replace('$', '\\$')
 
         short_company_bio = llm.invoke(f'''
@@ -72,7 +72,7 @@ def get_bio(unique,relevant_keywords_list,experience_1,experience_2,experience_3
     '''
 
     response = llm.invoke(prompt)
-    response = response.content.strip(' '')
+    response = response.content.strip(' "')
     
     final_response = wrap_keywords_in_description(response,relevant_keywords_list)
     return final_response
