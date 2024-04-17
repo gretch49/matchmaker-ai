@@ -390,6 +390,9 @@ if __name__ == '__main__':
                             st.write(' ')
                             st.markdown('**Copy and paste these sections into your résumé and format them to your specifications.**')
                             st.subheader(" ", divider='blue')
+                            st.write(" ")
+                            st.write(" ")
+                            st.write(" ")
 
                             with st.spinner('Generating bio...'):
                                 bio = get_bio(unique,relevant_keywords_list,experience_1,experience_2,experience_3)
