@@ -129,8 +129,8 @@ def get_experience(i,keywords_string):
 
     if experience['company']:
         with st.container(border=True):        
-            st.markdown(f'**ChatGPT searched for {experience['company']} and found this:**  \n')
-            display_description = f':blue[{experience['company_description']}]'
+            st.markdown(f"**ChatGPT searched for {experience['company']} and found this:**  \n")
+            display_description = f":blue[{experience['company_description']}]"
             st.markdown(display_description)
             st.write(' ')
             st.write(f'*(Optional)* Edit the description for {experience['company']} here:')
@@ -150,19 +150,19 @@ def ask_gpt(experience,keywords_list):
     keywords_string = st.session_state['relevant keywords']
     
     if experience['include']:
-        prompt = f'''
+        prompt = f"""
         Write a resume section with 5 bullet points for a {experience['job_title']} with {experience['years_job']} year(s) of experience at '{experience['short_company_bio']}' with the following keywords: [{keywords_string}] The company is described here: [{experience['company_description']}] Add in relevant details about the company to the job description.
-        '''
+        """
     elif experience['company']:
-        prompt = f'''
+        prompt = f"""
         Write a resume section with 5 bullet points for a {experience['job_title']} with {experience['years_job']} year(s) of experience at '{experience['company']}' with the following keywords: [{keywords_string}]        
-        '''
+        """
     else:
-        prompt = f'''
+        prompt = f"""
         Write a resume section with 5 bullet points for a {experience['job_title']} with {experience['years_job']} year(s) of experience with the following keywords: [{keywords_string}]        
-        '''
+        """
     if experience['notes']:
-        prompt += f' Additional notes about this {experience['job_title']}: {experience['notes']}'
+        prompt += f" Additional notes about this {experience['job_title']}: {experience['notes']}"
 
     prompt += ' Just return the bullet points. Do not use a header. Do not make up numbers.'
 
