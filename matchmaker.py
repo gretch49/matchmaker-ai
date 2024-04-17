@@ -65,7 +65,7 @@ def ddg_search(company):
 @st.cache_data(show_spinner=False)
 def get_bio(unique,relevant_keywords_list,experience_1,experience_2,experience_3):
     llm = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0, api_key=chatgpt_key)
-    job_details = f"{experience_1["job_title"]}, {experience_2["job_title"]}, {experience_3["job_title"]}"
+    job_details = f"{experience_1['job_title']}, {experience_2['job_title']}, {experience_3['job_title']}"
 
     prompt = f"""
     Write a 3-sentence, unique resume bio for a {job_details} based on this information [{unique}] and using these keywords [{relevant_keywords_list}]
