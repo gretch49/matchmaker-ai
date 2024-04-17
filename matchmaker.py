@@ -133,10 +133,10 @@ def get_experience(i,keywords_string):
             display_description = f":blue[{experience['company_description']}]"
             st.markdown(display_description)
             st.write(' ')
-            st.write(f'*(Optional)* Edit the description for {experience['company']} here:')
+            st.write(f"*(Optional)* Edit the description for {experience['company']} here:")
             experience['company_description'] = st.text_area('Edit company description', value = experience['company_description'],height=150, label_visibility='collapsed',key=f'company_description_{i}')
 
-            experience['include'] = st.checkbox(f'Include this description of {experience['company']} to assist ChatGPT in your résumé generation.',value=True,key=f'key_checkbox_include_company_{i}')
+            experience['include'] = st.checkbox(f"Include this description of {experience['company']} to assist ChatGPT in your résumé generation.",value=True,key=f'key_checkbox_include_company_{i}')
 
     st.write(' ')
 
@@ -397,19 +397,19 @@ if __name__ == '__main__':
                                     st.write(' ')
                                     st.write(' ')
                                     st.write(' ')
-                                    st.markdown(f'**{experience_1['job_title']}** at {experience_1['short_company_bio']} — {experience_1['years_job']}')
+                                    st.markdown(f"**{experience_1['job_title']}** at {experience_1['short_company_bio']} — {experience_1['years_job']}")
                                     st.write(ask_gpt(experience_1,relevant_keywords_list))
                                 elif experience_1['company'] and not experience_1['include']: 
                                     st.write(' ')
                                     st.write(' ')
                                     st.write(' ')
-                                    st.markdown(f'**{experience_1['job_title']}** at {experience_1['company']} — {experience_1['years_job']}')
+                                    st.markdown(f"**{experience_1['job_title']}** at {experience_1['company']} — {experience_1['years_job']}")
                                     st.write(ask_gpt(experience_1,relevant_keywords_list))
                                 else:
                                     st.write(' ')
                                     st.write(' ')
                                     st.write(' ')
-                                    st.write(f'**{experience_1['job_title']}** — {experience_1['years_job']}')
+                                    st.write(f"**{experience_1['job_title']}** — {experience_1['years_job']}")
                                     st.write(ask_gpt(experience_1,relevant_keywords_list))
 
 
@@ -418,19 +418,19 @@ if __name__ == '__main__':
                                     st.write(' ')
                                     st.write(' ')
                                     st.write(' ')
-                                    st.markdown(f'**{experience_2['job_title']}** at {experience_2['short_company_bio']} — {experience_2['years_job']}')
+                                    st.markdown(f"**{experience_2['job_title']}** at {experience_2['short_company_bio']} — {experience_2['years_job']}")
                                     st.write(ask_gpt(experience_2,relevant_keywords_list))
                                 elif experience_2['company'] and not experience_2['include']: 
                                     st.write(' ')
                                     st.write(' ')
                                     st.write(' ')
-                                    st.markdown(f'**{experience_2['job_title']}** at {experience_2['company']} — {experience_2['years_job']}')
+                                    st.markdown(f"**{experience_2['job_title']}** at {experience_2['company']} — {experience_2['years_job']}")
                                     st.write(ask_gpt(experience_2,relevant_keywords_list))
                                 else:
                                     st.write(' ')
                                     st.write(' ')
                                     st.write(' ')
-                                    st.markdown(f'**{experience_2['job_title']}** — {experience_2['years_job']}')
+                                    st.markdown(f"**{experience_2['job_title']}** — {experience_2['years_job']}")
                                     st.write(ask_gpt(experience_2,relevant_keywords_list))
 
 
@@ -440,25 +440,25 @@ if __name__ == '__main__':
                                     st.write(' ')
                                     st.write(' ')
                                     st.write(' ')
-                                    st.markdown(f'**{experience_3['job_title']}** at {experience_3['short_company_bio']} — {experience_3['years_job']}')
+                                    st.markdown(f"**{experience_3['job_title']}** at {experience_3['short_company_bio']} — {experience_3['years_job']}")
                                     st.write(ask_gpt(experience_3,relevant_keywords_list))
 
                                 elif experience_3['company'] and not experience_3['include']: 
                                     st.write(' ')
                                     st.write(' ')
                                     st.write(' ')
-                                    st.markdown(f'**{experience_3['job_title']}** at {experience_3['company']} — {experience_3['years_job']}')
+                                    st.markdown(f"**{experience_3['job_title']}** at {experience_3['company']} — {experience_3['years_job']}")
                                     st.write(ask_gpt(experience_3,relevant_keywords_list))
                                 else:
                                     st.write(' ')
                                     st.write(' ')
                                     st.write(' ')
-                                    st.write(f'**{experience_3['job_title']}**{experience_3['years_job']}')
+                                    st.write(f"**{experience_3['job_title']}**{experience_3['years_job']}")
                                     st.write(ask_gpt(experience_3,relevant_keywords_list))
                                 
 
                             st.divider()
-                            st.markdown(f'Relevant keywords: :blue[{relevant_keywords_string}]')
+                            st.markdown(f"Relevant keywords: :blue[{relevant_keywords_string}]")
             
                             st.caption('Please note: The highlighted text is provided for your convenience. Not all keywords may be highlighted if the text was changed slightly. It is strongly advised that you refrain from highlighting keywords in your résumé.')
 
