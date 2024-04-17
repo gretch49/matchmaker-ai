@@ -245,7 +245,7 @@ if __name__ == '__main__':
             st.success('You're using Gretchen's key. :tada:')
             chatgpt_key = os.environ.get('OPENAI_API_KEY')
         elif sidebar_key and not sidebar_key.startswith('sk-'):
-            st.error('Double-check your OpenAI API key! If you try to use this, you'll get an error.', icon='⚠')
+            st.error('Double-check your OpenAI API key! If you try to use this, you'll get an error.')
         elif sidebar_key:
             st.success('Key saved for the duration of this session.')
             st.info('Close the sidebar to hide your key.')
