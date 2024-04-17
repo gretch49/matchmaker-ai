@@ -117,11 +117,11 @@ def get_experience(i,keywords_string):
             st.caption('This section will populate once you add your position title.')
         else:
             if experience['company']:
-                display = f'Write a résumé work section with 5 bullet points for a(n) **{experience['job_title']}** with **{experience['years_job']} year(s) of experience** at **{experience['company']}** with the following keywords:  \n  \n  :blue[**{keywords_string}**]'
+                display = f"Write a résumé work section with 5 bullet points for a(n) **{experience['job_title']}** with **{experience['years_job']} year(s) of experience** at **{experience['company']}** with the following keywords:  \n  \n  :blue[**{keywords_string}**]"
                 # Search for the company
                 experience['company_description'],experience['short_company_bio'] = ddg_search(experience['company'])
             else:
-                display = f'Write a résumé work section with 5 bullet points for a(n) **{experience['job_title']}** with **{experience['years_job']} year(s) of experience** with the following keywords:  \n  \n  :blue[**{keywords_string}**]'
+                display = f"Write a résumé work section with 5 bullet points for a(n) **{experience['job_title']}** with **{experience['years_job']} year(s) of experience** with the following keywords:  \n  \n  :blue[**{keywords_string}**]"
             if experience['notes']:
                 display = (f"{display}  \n  \nAdditional notes: {experience['notes']}")
             st.markdown(display)
